@@ -18,6 +18,9 @@ uv run prepare_mlx.py
 
 # 4. Run a single training experiment (~5 min)
 uv run train_mlx.py
+
+# 4b. Or run with a custom time budget (e.g. 10 minutes)
+uv run train_mlx.py --time-budget 600
 ```
 
 ## Project structure
@@ -44,6 +47,14 @@ pyproject.toml  — dependencies
 - ~96x slower than H100 — 5 min on H100 ≈ 8 hours on M1 Pro
 
 ## Performance
+
+**Tunable time budget:** The default training budget is 5 minutes (300s). Use `--time-budget` to increase it:
+```bash
+uv run train_mlx.py --time-budget 600   # 10 minutes
+uv run train_mlx.py --time-budget 1800  # 30 minutes
+uv run train_mlx.py --time-budget 3600  # 1 hour
+```
+Longer budgets allow more optimizer steps and significantly better BPB. On Apple Silicon, 10-30 minutes is a good starting point for meaningful results.
 
 **Benchmarks (M1 Pro 16GB, DEPTH=4, 11.5M params):**
 - ~26K tok/sec steady state, ~2.5s per step

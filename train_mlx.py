@@ -1,9 +1,12 @@
 """
 Autoresearch pretraining script (MLX). Single-device, single-file.
 Apple Silicon MLX port of the original CUDA autoresearch.
-Usage: uv run train_mlx.py
+Usage:
+    uv run train_mlx.py                  # default 5-minute budget
+    uv run train_mlx.py --time-budget 600  # 10-minute budget
 """
 
+import argparse
 import gc
 import math
 import os
@@ -461,6 +464,12 @@ def build_model_config(depth, vocab_size):
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Autoresearch MLX training")
+    parser.add_argument("--time-budget", type=int, default=TIME_BUDGET,
+                        help=f"Training time budget in seconds (default: {TIME_BUDGET})")
+    args = parser.parse_args()
+    time_budget = args.time_budget
+
     t_start = time.time()
     mx.random.seed(42)
 
@@ -505,7 +514,7 @@ if __name__ == "__main__":
 
     loss_grad_fn = nn.value_and_grad(model, lambda mdl, inp, tgt: mdl(inp, targets=tgt))
 
-    print(f"Time budget: {TIME_BUDGET}s")
+    print(f"Time budget: {time_budget}s")
     print(f"Gradient accumulation steps: {grad_accum_steps}")
 
     # -------------------------------------------------------------------
@@ -539,7 +548,7 @@ if __name__ == "__main__":
             accum_grads = tree_map(lambda grad: grad * (1.0 / grad_accum_steps), accum_grads)
 
         # Progress and schedule
-        progress = min(total_training_time / TIME_BUDGET, 1.0)
+        progress = min(total_training_time / time_budget, 1.0)
         lrm = get_lr_multiplier(progress)
         optimizer.set_lr_multiplier(lrm)
         optimizer.set_weight_decay_multiplier(1.0 - progress)
@@ -563,7 +572,7 @@ if __name__ == "__main__":
         debiased_smooth_loss = smooth_train_loss / (1 - ema_beta ** (step + 1))
         pct_done = 100 * progress
         tok_per_sec = int(TOTAL_BATCH_SIZE / dt) if dt > 0 else 0
-        remaining = max(0.0, TIME_BUDGET - total_training_time)
+        remaining = max(0.0, time_budget - total_training_time)
 
         print(
             f"\rstep {step:05d} ({pct_done:.1f}%) | loss: {debiased_smooth_loss:.6f} | "
@@ -583,7 +592,7 @@ if __name__ == "__main__":
         step += 1
 
         # Time's up
-        if step >= STARTUP_EXCLUDE_STEPS and total_training_time >= TIME_BUDGET:
+        if step >= STARTUP_EXCLUDE_STEPS and total_training_time >= time_budget:
             break
 
     print()  # newline after \r training log
