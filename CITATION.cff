@@ -29,6 +29,7 @@ preferred-citation:
   month: 3
   doi: "10.5281/zenodo.18956067"
   url: "https://namangoyal.com/blog/2026/autoresearch-mlx/"
+  journal: "namangoyal.com"
 references:
   - type: software
     title: "autoresearch"

@@ -4,6 +4,21 @@ Apple Silicon MLX port of [karpathy/autoresearch](https://github.com/karpathy/au
 
 **Blog post:** [Your MacBook Can Do Autonomous AI Research Now](https://namangoyal.com/blog/2026/autoresearch-mlx/) — architecture deep dive, real benchmarks, and a full guide.
 
+## Citation
+
+If you use this in your research, please cite:
+
+```bibtex
+@software{goyal2026your-macbook-can-do-autonomous-ai-research-now,
+  title   = {Your MacBook Can Do Autonomous AI Research Now},
+  author  = {Goyal, Naman},
+  year    = {2026},
+  month   = {Mar},
+  doi     = {10.5281/zenodo.18956067},
+  url     = {https://namangoyal.com/blog/2026/autoresearch-mlx/}
+}
+```
+
 ## Quick start (Apple Silicon)
 
 **Requirements:** Apple M-series Mac (M1/M2/M3/M4), Python 3.10+, [uv](https://docs.astral.sh/uv/).
@@ -143,32 +158,6 @@ Hi have a look at program.md and let's kick off a new experiment! let's do the s
 ```
 
 The `program.md` file is essentially a super lightweight "skill".
-
-## Citation
-
-If you use this software in your research, please cite it:
-
-```bibtex
-@software{goyal2026autoresearch_mlx,
-  author = {Goyal, Naman},
-  title = {autoresearch-mlx: Apple Silicon MLX Port of Autoresearch},
-  year = {2026},
-  month = {Mar},
-  url = {https://namangoyal.com/blog/2026/autoresearch-mlx/},
-  doi = {10.5281/zenodo.18956067}
-}
-```
-
-The original autoresearch project by [Andrej Karpathy](https://github.com/karpathy/autoresearch):
-
-```bibtex
-@software{karpathy2026autoresearch,
-  author = {Karpathy, Andrej},
-  title = {autoresearch},
-  year = {2026},
-  url = {https://github.com/karpathy/autoresearch}
-}
-```
 
 ## Contributors
 
