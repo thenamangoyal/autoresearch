@@ -157,7 +157,7 @@ def train_tokenizer():
     print("Tokenizer: training BPE tokenizer...")
     t0 = time.time()
 
-    tokenizer = rustbpe.Tokenizer()
+    tokenizer = rustbpe.Tokenizer()  # type: ignore[unresolved-attribute]
     vocab_size_no_special = VOCAB_SIZE - len(SPECIAL_TOKENS)
     tokenizer.train_from_iterator(text_iterator(), vocab_size_no_special, pattern=SPLIT_PATTERN)
 
