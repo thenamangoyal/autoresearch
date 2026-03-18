@@ -12,6 +12,7 @@ import math
 import os
 import time
 from dataclasses import dataclass, asdict
+from typing import Any, cast
 
 import mlx.core as mx
 import mlx.nn as nn
@@ -208,7 +209,7 @@ class GPT(nn.Module):
 
     def estimate_flops(self):
         """Estimated FLOPs per token (forward + backward)."""
-        nparams = sum(p.size for _, p in tree_flatten(self.parameters()))
+        nparams = sum(p.size for _, p in cast(list[tuple[str, Any]], tree_flatten(self.parameters())))
         ve_numel = sum(ve.weight.size for ve in self.value_embeds.values())
         nparams_exclude = self.wte.weight.size + ve_numel + self.resid_lambdas.size + self.x0_lambdas.size
         h = self.config.n_head
@@ -224,7 +225,7 @@ class GPT(nn.Module):
         wte = self.wte.weight.size
         value_embeds = sum(ve.weight.size for ve in self.value_embeds.values())
         lm_head = self.lm_head.weight.size
-        transformer_matrices = sum(p.size for _, p in tree_flatten([b.parameters() for b in self.blocks]))
+        transformer_matrices = sum(p.size for _, p in cast(list[tuple[str, Any]], tree_flatten([b.parameters() for b in self.blocks])))
         scalars = self.resid_lambdas.size + self.x0_lambdas.size
         total = wte + value_embeds + lm_head + transformer_matrices + scalars
         return {
@@ -281,7 +282,7 @@ class AdamW:
         dmodel_lr_scale = (model_dim / 768) ** -0.5
         print(f"Scaling AdamW LRs by 1/sqrt({model_dim}/768) = {dmodel_lr_scale:.6f}")
 
-        flat_params = tree_flatten(model.parameters())
+        flat_params = cast(list[tuple[str, Any]], tree_flatten(model.parameters()))
         for path, param in flat_params:
             if "blocks" in path and param.ndim == 2:
                 self.param_config[path] = {
@@ -555,6 +556,7 @@ if __name__ == "__main__":
         optimizer.update(model, accum_grads)
         mx.eval(model.parameters(), *optimizer.state)
 
+        assert train_loss is not None
         train_loss_f = float(train_loss.item())
 
         # Fast fail: abort if loss is exploding or NaN
